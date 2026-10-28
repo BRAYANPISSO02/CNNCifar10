@@ -2,11 +2,11 @@
 __pycache__/
 *.pyc
 .pytest_cache/
+.atl/
 data/cifar-10-batches-py/
 data/*.tar.gz
 *.png
 !*_curves.png
-!samples/*.png
 checkpoints/
 *.pth
 *.pt
