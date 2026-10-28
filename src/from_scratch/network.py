@@ -1,3 +1,4 @@
+import os
 import time
 import numpy as np
 from src.from_scratch.activations import ReLU, SoftmaxCrossEntropy
@@ -106,6 +107,9 @@ class NeuralNetwork:
         return history
 
     def save_weights(self, file_path: str):
+        dirname = os.path.dirname(os.path.abspath(file_path))
+        if dirname:
+            os.makedirs(dirname, exist_ok=True)
         weights = {}
         for idx, layer in enumerate(self.layers):
             if isinstance(layer, Dense):
@@ -119,3 +123,15 @@ class NeuralNetwork:
             if isinstance(layer, Dense):
                 layer.W = data[f"W_{idx}"]
                 layer.b = data[f"b_{idx}"]
+
+
+def build_scratch_mlp(num_classes: int = 3, in_features: int = 3072) -> NeuralNetwork:
+    return NeuralNetwork(
+        [
+            Dense(in_features=in_features, out_features=256, init_method="he"),
+            ReLU(),
+            Dense(in_features=256, out_features=64, init_method="he"),
+            ReLU(),
+            Dense(in_features=64, out_features=num_classes, init_method="xavier"),
+        ]
+    )

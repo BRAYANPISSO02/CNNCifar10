@@ -5,3 +5,11 @@ __pycache__/
 data/cifar-10-batches-py/
 data/*.tar.gz
 *.png
+!*_curves.png
+!samples/*.png
+checkpoints/
+*.pth
+*.pt
+*.keras
+.engram/
+

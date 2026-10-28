@@ -2,7 +2,12 @@ import argparse
 import numpy as np
 import torch
 from src.data.dataset import DEFAULT_TARGET_CLASSES, get_pytorch_dataloaders
-from src.frameworks.pytorch_cnn import PyTorchCNN, evaluate_pytorch_model, train_pytorch_model
+from src.frameworks.pytorch_cnn import (
+    PyTorchCNN,
+    evaluate_pytorch_model,
+    save_pytorch_model,
+    train_pytorch_model,
+)
 from src.utils.metrics import plot_training_history, print_classification_report
 
 
@@ -13,6 +18,7 @@ def main():
     parser.add_argument("--lr", type=float, default=0.001)
     parser.add_argument("--device", type=str, default=None)
     parser.add_argument("--plot", type=str, default="pytorch_curves.png")
+    parser.add_argument("--save-weights", type=str, default="checkpoints/pytorch_cnn.pth", help="Path to save trained weights")
     args = parser.parse_args()
 
     print("\n" + "=" * 50)
@@ -54,6 +60,10 @@ def main():
 
     if args.plot:
         plot_training_history(history, title="PyTorch CNN", save_path=args.plot)
+
+    if args.save_weights:
+        save_pytorch_model(model, args.save_weights)
+        print(f"Weights saved to: {args.save_weights}")
 
 
 if __name__ == "__main__":

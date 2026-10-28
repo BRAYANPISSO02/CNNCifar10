@@ -2,7 +2,7 @@ import argparse
 from src.data.dataset import DEFAULT_TARGET_CLASSES, load_filtered_cifar10
 from src.from_scratch.activations import ReLU
 from src.from_scratch.layers import Dense
-from src.from_scratch.network import NeuralNetwork
+from src.from_scratch.network import NeuralNetwork, build_scratch_mlp
 from src.from_scratch.optimizers import Adam, SGDMomentum
 from src.utils.metrics import plot_training_history, print_classification_report
 
@@ -14,6 +14,7 @@ def main():
     parser.add_argument("--lr", type=float, default=0.001)
     parser.add_argument("--optimizer", type=str, default="adam", choices=["adam", "sgd"])
     parser.add_argument("--plot", type=str, default="scratch_curves.png")
+    parser.add_argument("--save-weights", type=str, default="checkpoints/scratch_mlp.npz", help="Path to save trained weights")
     args = parser.parse_args()
 
     print("\n" + "=" * 50)
@@ -26,15 +27,7 @@ def main():
     print(f"Dataset loaded: {len(class_names)} classes {class_names}")
     print(f"Train samples: {X_train.shape[0]} | Test samples: {X_test.shape[0]} | Features: {X_train.shape[1]}")
 
-    model = NeuralNetwork(
-        [
-            Dense(in_features=3072, out_features=256, init_method="he"),
-            ReLU(),
-            Dense(in_features=256, out_features=64, init_method="he"),
-            ReLU(),
-            Dense(in_features=64, out_features=len(class_names), init_method="xavier"),
-        ]
-    )
+    model = build_scratch_mlp(num_classes=len(class_names), in_features=X_train.shape[1])
 
     if args.optimizer == "adam":
         optimizer = Adam(lr=args.lr, weight_decay=1e-4)
@@ -59,6 +52,10 @@ def main():
 
     if args.plot:
         plot_training_history(history, title="Scratch MLP (NumPy)", save_path=args.plot)
+
+    if args.save_weights:
+        model.save_weights(args.save_weights)
+        print(f"Weights saved to: {args.save_weights}")
 
 
 if __name__ == "__main__":

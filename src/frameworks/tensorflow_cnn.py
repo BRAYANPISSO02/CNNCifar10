@@ -1,3 +1,4 @@
+import os
 import tensorflow as tf
 from tensorflow.keras import layers, models
 
@@ -72,3 +73,25 @@ def evaluate_tensorflow_model(
     loss = float(results[0])
     acc = float(results[1])
     return loss, acc
+
+
+def save_tensorflow_model(model: models.Model, save_path: str) -> None:
+    dirname = os.path.dirname(os.path.abspath(save_path))
+    if dirname:
+        os.makedirs(dirname, exist_ok=True)
+    if save_path.endswith(".weights.h5"):
+        model.save_weights(save_path)
+    else:
+        model.save(save_path)
+
+
+def load_tensorflow_model(
+    save_path: str,
+    num_classes: int = 3,
+    input_shape: tuple = (32, 32, 3),
+) -> models.Model:
+    if save_path.endswith(".weights.h5"):
+        model = build_tensorflow_cnn(num_classes=num_classes, input_shape=input_shape)
+        model.load_weights(save_path)
+        return model
+    return tf.keras.models.load_model(save_path)

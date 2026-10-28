@@ -1,3 +1,4 @@
+import os
 import time
 import torch
 import torch.nn as nn
@@ -125,3 +126,23 @@ def evaluate_pytorch_model(
             correct += predicted.eq(targets).sum().item()
 
     return running_loss / total, correct / total
+
+
+def save_pytorch_model(model: nn.Module, save_path: str) -> None:
+    dirname = os.path.dirname(os.path.abspath(save_path))
+    if dirname:
+        os.makedirs(dirname, exist_ok=True)
+    torch.save(model.state_dict(), save_path)
+
+
+def load_pytorch_model(
+    save_path: str,
+    num_classes: int = 3,
+    device: torch.device | str = "cpu",
+) -> PyTorchCNN:
+    model = PyTorchCNN(num_classes=num_classes)
+    state_dict = torch.load(save_path, map_location=device, weights_only=True)
+    model.load_state_dict(state_dict)
+    model.to(device)
+    model.eval()
+    return model
